@@ -80,16 +80,15 @@ function ChatView() {
   const { data: health } = usePolling<HealthResponse>(api.health, 30_000);
 
   // ── Hooks ──
-  const { workspaces, currentWorkspaceUri } = useWorkspaces(
+  const { workspaces, currentWorkspaceUri, defaultWorkspaceUri } = useWorkspaces(
     conversations,
     projectSlug,
   );
   useEffect(() => {
-    const first = workspaces[0];
-    if (projectSlug === "unknown" && !currentWorkspaceUri && !activeId && !isSettingsPage && first) {
-      navigate(`/${slugFromUri(first.uri)}`, { replace: true });
+    if (projectSlug === "unknown" && !currentWorkspaceUri && !activeId && !isSettingsPage && defaultWorkspaceUri) {
+      navigate(`/${slugFromUri(defaultWorkspaceUri)}`, { replace: true });
     }
-  }, [projectSlug, currentWorkspaceUri, activeId, isSettingsPage, workspaces, navigate]);
+  }, [projectSlug, currentWorkspaceUri, activeId, isSettingsPage, defaultWorkspaceUri, navigate]);
   const projectLabel = projectSlug === "unknown" && !currentWorkspaceUri
     ? "No workspace selected"
     : projectSlug;

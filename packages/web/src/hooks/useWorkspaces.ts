@@ -32,6 +32,7 @@ interface ConversationEntry {
 interface UseWorkspacesResult {
   workspaces: { uri: string; name: string }[];
   currentWorkspaceUri: string | undefined;
+  defaultWorkspaceUri: string | undefined;
 }
 
 /**
@@ -45,6 +46,7 @@ export function useWorkspaces(
   const [workspaces, setWorkspaces] = useState<{ uri: string; name: string }[]>(
     [],
   );
+  const [defaultWorkspaceUri, setDefaultWorkspaceUri] = useState<string>();
   const wsInitialized = useRef(false);
 
   useEffect(() => {
@@ -76,6 +78,9 @@ export function useWorkspaces(
           uri: w.workspaceUri,
           name: workspaceNameFromUri(w.workspaceUri),
         }));
+        // Conversation metadata can describe old projects; only live discovery
+        // may choose a default for a new chat.
+        setDefaultWorkspaceUri(fromApi[0]?.uri);
 
         // Assign a high score (current time) to active workspaces that don't have past conversations
         // so that they stay at the very top of the list.
@@ -102,6 +107,7 @@ export function useWorkspaces(
         wsInitialized.current = true;
       })
       .catch(() => {
+        setDefaultWorkspaceUri(undefined);
         const list = Array.from(fromConvs, ([uri, name]) => ({ uri, name }));
         list.sort((a, b) => {
           const timeA = workspaceRecency.get(a.uri) ?? 0;
@@ -118,7 +124,7 @@ export function useWorkspaces(
     [projectSlug, workspaces],
   );
 
-  return { workspaces, currentWorkspaceUri };
+  return { workspaces, currentWorkspaceUri, defaultWorkspaceUri };
 }
 
 export { slugFromUri, uriFromSlug };

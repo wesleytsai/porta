@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import App from "../App";
@@ -44,6 +44,21 @@ it("preserves an explicitly selected project when other workspaces load", async 
   renderApp("/chosen");
   await waitFor(() => expect(screen.getByTitle("Attach image")).toBeEnabled());
   expect(screen.getByLabelText("Current route")).toHaveTextContent(/^\/chosen$/);
+});
+
+it("requires a live workspace result before selecting a project from the startup placeholder", async () => {
+  vi.mocked(api.getWorkspaces).mockRejectedValue(new Error("Workspace discovery unavailable"));
+  vi.mocked(api.conversations).mockResolvedValue({ trajectorySummaries: {
+    historical: {
+      summary: "Old project conversation", stepCount: 1, trajectoryId: "historical",
+      status: "CASCADE_RUN_STATUS_DONE", createdTime: "2026-10-28T00:00:00Z",
+      lastModifiedTime: "2026-10-28T00:00:00Z",
+      workspaces: [{ workspaceFolderAbsoluteUri: "file:///qa/historical" }],
+    },
+  } });
+  await act(async () => { renderApp(); });
+  expect(screen.getByLabelText("Current route")).toHaveTextContent(/^\/unknown$/);
+  expect(screen.getAllByText("No workspace selected").length).toBeGreaterThan(0);
 });
 
 it("keeps an open conversation on its current route when workspaces load", async () => {
