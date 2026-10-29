@@ -290,19 +290,26 @@ export function Sidebar({
       <div
         key={conv.id}
         className={`sidebar-item ${conv.id === activeId ? "active" : ""} ${isArchived(conv) ? "dimmed" : ""}`}
-        onClick={() => {
-          markSeen(conv.id);
-          onSelect(conv.id);
-        }}
       >
-        <div className="sidebar-item-content">
-          <div className="sidebar-item-title">{conv.summary.summary}</div>
-          <div className="sidebar-item-meta">
-            {relativeTime(conv.summary.lastModifiedTime)}
-            {" · "}
-            {conv.summary.stepCount} steps
+        <button
+          className="sidebar-item-select"
+          type="button"
+          aria-label={`Open conversation: ${conv.summary.summary}`}
+          aria-current={conv.id === activeId ? "page" : undefined}
+          onClick={() => {
+            markSeen(conv.id);
+            onSelect(conv.id);
+          }}
+        >
+          <div className="sidebar-item-content">
+            <div className="sidebar-item-title">{conv.summary.summary}</div>
+            <div className="sidebar-item-meta">
+              {relativeTime(conv.summary.lastModifiedTime)}
+              {" · "}
+              {conv.summary.stepCount} steps
+            </div>
           </div>
-        </div>
+        </button>
         <div className="sidebar-item-right">
           {isRunning && <IconSpinner size={13} className="item-indicator" />}
           {hasUpdates && <span className="item-dot" />}
@@ -313,6 +320,9 @@ export function Sidebar({
               setMenuOpen(menuOpen === conv.id ? null : conv.id);
             }}
             title="More options"
+            type="button"
+            aria-label={`More options for ${conv.summary.summary}`}
+            aria-expanded={menuOpen === conv.id}
           >
             <IconMore size={13} />
           </button>
@@ -462,11 +472,12 @@ export function Sidebar({
                 className="search-modal-input"
                 type="text"
                 placeholder="Search conversations..."
+                aria-label="Search conversations"
                 value={searchQuery}
                 onChange={(e) => handleSearchInput(e.target.value)}
                 autoFocus
               />
-              <button className="search-modal-close" onClick={closeSearch}>
+              <button className="search-modal-close" onClick={closeSearch} type="button" aria-label="Close search">
                 <IconX size={13} />
               </button>
             </div>

@@ -309,6 +309,8 @@ export function ChatInput({
               <button
                 className="attachment-remove"
                 onClick={() => removeAttachment(i)}
+                type="button"
+                aria-label={`Remove attachment ${i + 1}`}
               >
                 ×
               </button>
@@ -339,6 +341,7 @@ export function ChatInput({
             ref={textareaRef}
             className="chat-input"
             placeholder="Send a message..."
+            aria-label="Message"
             value={draft}
             onChange={handleInput}
             onKeyDown={handleKeyDown}

@@ -84,6 +84,15 @@ function ChatView() {
     conversations,
     projectSlug,
   );
+  useEffect(() => {
+    const first = workspaces[0];
+    if (projectSlug === "unknown" && !currentWorkspaceUri && !activeId && !isSettingsPage && first) {
+      navigate(`/${slugFromUri(first.uri)}`, { replace: true });
+    }
+  }, [projectSlug, currentWorkspaceUri, activeId, isSettingsPage, workspaces, navigate]);
+  const projectLabel = projectSlug === "unknown" && !currentWorkspaceUri
+    ? "No workspace selected"
+    : projectSlug;
   const { draftText, handleDraftChange } = useDraftText(activeId);
   const { settings, updateSettings } = useClientSettings();
 
@@ -298,7 +307,7 @@ function ChatView() {
       <div className="main-panel">
         <ChatHeader
           title={headerTitle}
-          projectName={projectSlug ?? undefined}
+          projectName={projectLabel}
           onMenuToggle={() => setSidebarOpen(true)}
         />
         {isSettingsPage ? (
@@ -409,7 +418,7 @@ function ChatView() {
                   />
                 ) : (
                   <div className="chat-empty-project">
-                    <IconFolder size={13} /> {projectSlug ?? "Others"}
+                    <IconFolder size={13} /> {projectLabel ?? "No workspace selected"}
                   </div>
                 )}
               </div>
