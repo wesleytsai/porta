@@ -353,6 +353,35 @@
   background: var(--bg-active);
 }
 
+.sidebar-item-select {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-item-select:focus-visible,
+.sidebar-item-menu-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sidebar-item:focus-within .sidebar-item-menu-btn {
+  display: flex;
+  opacity: 0.6;
+}
+
+.sidebar-item:focus-within .item-indicator,
+.sidebar-item:focus-within .item-dot {
+  display: none;
+}
+
 .sidebar-item-content {
   flex: 1;
   min-width: 0;
